@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ozempic Dosing Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f7f7f7;
+        }
+        #calculator {
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+        h2 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 8px;
+            margin: 5px 0 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        select {
+            width: calc(100% - 22px);
+            padding: 8px;
+            margin: 5px 0 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: calc(100% - 22px);
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 14px;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .disclaimer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div id="calculator">
+        <h2>Ozempic Dosing Calculator</h2>
+        <label for="weight">Patient Weight (kg/lb):</label>
+        <input type="number" id="weight">
+        <select id="weightUnit">
+            <option value="kg">kg</option>
+            <option value="lb">lb</option>
+        </select>
+        <button onclick="calculate()">Calculate</button>
+        <div id="results">
+            <label for="dose">Recommended Starting Dose (mg):</label>
+            <input type="text" id="dose" readonly>
+            <h3>Taper Schedule:</h3>
+            <table id="taperTable">
+                <thead>
+                    <tr>
+                        <th>Week</th>
+                        <th>Dose (mg)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Taper schedule rows will be added here dynamically -->
+                </tbody>
+            </table>
+        </div>
+        <div class="disclaimer">
+            <p><strong>Disclaimer:</strong> This calculator is provided for educational purposes only and should not replace professional medical advice. The calculated doses are based on simplified assumptions and may not be appropriate for all patients. Always consult with a healthcare professional for individualized treatment recommendations.</p>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            var weight = parseFloat(document.getElementById('weight').value);
+            var weightUnit = document.getElementById('weightUnit').value;
+            var dose = 0;
+
+            // Convert weight to kg if it's in pounds
+            if (weightUnit === 'lb') {
+                weight = weight * 0.453592; // 1 lb = 0.453592 kg
+            }
+
+            // Determine starting dose based on weight
+            if (weight < 60) {
+                dose = 0.25;
+            } else if (weight >= 60 && weight <= 90) {
+                dose = 0.5;
+            } else {
+                dose = 1;
+            }
+
+            document.getElementById('dose').value = dose.toFixed(2);
+
+            // Generate taper schedule for 12 weeks
+            var taperTable = document.getElementById('taperTable').getElementsByTagName('tbody')[0];
+            taperTable.innerHTML = ""; // Clear existing table rows
+
+            var currentDose = dose;
+            for (var week = 1; week <= 12; week++) {
+                var newRow = taperTable.insertRow();
+                var cell1 = newRow.insertCell(0);
+                var cell2 = newRow.insertCell(1);
+
+                cell1.innerHTML = week;
+                cell2.innerHTML = currentDose.toFixed(2);
+
+                // Reduce dose by 0.1 mg every 2 weeks
+                if (week % 2 === 0 && currentDose > 0.1) {
+                    currentDose -= 0.1;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
